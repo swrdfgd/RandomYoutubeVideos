@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' type='text/javascript'></script>
+  <script src="englishword.js"></script>
+  <script src="indoword.js"></script>
+  
+  <script>
+	 punk = [];
+	 piu = 0;
+	 banyakDaftar = 11;
+	 for (let i = 1; i < banyakDaftar+1; i++){
+	   if (Math.random() < 1/2){
+		document.write('<scr' + 'ipt src=\"https://cdn.jsdelivr.net/gh/swrdfgd/PunkRecords/punk'+i+'.js\"></scr' + 'ipt>')
+		piu++;
+	   }
+	 }
+	 if (piu == 0){
+	  document.write('<scr' + 'ipt src=\"https://cdn.jsdelivr.net/gh/swrdfgd/PunkRecords/punk'+(1+Math.floor(Math.random()*banyakDaftar))+'.js\"></scr' + 'ipt>')
+	  piu++;
+	 }
+  </script>
+  <script>
+	 kata = [];
+	 document.write('<scr' + 'ipt src="https://swrdfgd.github.io/RandomWords/kata/output_'+(1+Math.floor(Math.random()*424))+'.js"></scr' + 'ipt>');
+	 while(Math.random() < 1/2){
+		 document.write('<scr' + 'ipt src="https://swrdfgd.github.io/RandomWords/kata/output_'+(1+Math.floor(Math.random()*424))+'.js"></scr' + 'ipt>');
+	 }
+  </script>
+  
+  <script src="wordGen.js"></script>
+  
+  <title>Random YouTube Video Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #dfe6e9;
+      color: #2d3436;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header, footer {
+      background: #636e72;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    iframe {
+      width: 90vw;
+      max-width: 640px;
+      height: 360px;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.15);
+    }
+    .buttons {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+    button {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      background: #0984e3;
+      color: white;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #74b9ff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎲 Random YouTube Video Generator</h1>
+  </header>
+
+  <main>
+    <iframe id="ytFrame" src="" allowfullscreen></iframe>
+    <div class="buttons">
+      <button onclick="loadVideo()">Next Video</button>
+      <button id="watchBtn" onclick="watchOnYouTube()" disabled>Watch on YouTube</button>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Random Generator
+  </footer>
+
+  <script>
+    const daftarApi = [
+      	'AIzaSyBwwv3LrgSG3NcETgahW-3-_DyP74GwViA','AIzaSyB7TX3CfUSUBnWnNP9CGBjLzmfIeo6SpfM',
+      'AIzaSyCqKzTy1eRi9ydH7a1E-jgbBfZVNcpOLGQ',
+    ];
+
+    const daftarPlaylist = [
+      
+    ];
+
+    const daftarVideoId = [
+      
+    ];
+
+    const playlistPageTokens = {};
+
+    function generateKeyword() {
+      let keyword = '';
+      while (Math.random() < 1/2 || keyword.length < 3) {
+        let pilihanKeyword = wordGen();
+		if (Math.random() < 1/2){
+			let bagian = pilihanKeyword.split(/[-–—\/,:.;()\[\]\s]+/);
+			for (let i = 0; i < bagian.length; i++) {
+			  if (Math.random() < 1/2) keyword += bagian[i] + ' ';
+			}
+		}
+		else keyword += pilihanKeyword + ' ';
+      }
+      keyword = keyword.trim();
+	  
+      return keyword;
+    }
+
+    async function videoExists(videoId) {
+      const img = new Image();
+      img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      return new Promise(resolve => {
+        img.onload = () => resolve(img.width > 120);
+        img.onerror = () => resolve(false);
+      });
+    }
+
+    async function getRandomVideoId(trial = 0) {
+      const tryId = Math.random().toString(36).substring(2, 13);
+      if (await videoExists(tryId)) return tryId;
+
+      // Step 2: Search API
+      if (Math.random() < 0.5 || trial > 4) {
+        const keyword = generateKeyword();
+        const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=10`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.items?.length > 0) {
+            return data.items[Math.floor(Math.random() * data.items.length)].id.videoId;
+          }
+        } catch (e) {
+          console.warn("Search failed", e);
+        }
+      }
+		
+		return getRandomVideoId(trial+1);
+		
+      // Step 3: Playlist API with optional nextPageToken
+      if (Math.random() < 0.5 && daftarPlaylist.length > 0) {
+        const playlistId = daftarPlaylist[Math.floor(Math.random() * daftarPlaylist.length)];
+        const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
+        let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}&maxResults=20`;
+
+        const token = playlistPageTokens[playlistId];
+        if (token && Math.random() < 0.5) {
+          url += `&pageToken=${token}`;
+        }
+
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.nextPageToken) {
+            playlistPageTokens[playlistId] = data.nextPageToken;
+          }
+
+          const vids = data.items
+            .map(item => item.snippet?.resourceId?.videoId)
+            .filter(Boolean);
+          if (vids.length > 0) {
+            return vids[Math.floor(Math.random() * vids.length)];
+          }
+        } catch (e) {
+          console.warn("Playlist failed", e);
+        }
+      }
+
+      // Step 4: Fallback dari array
+      if (Math.random() < 0.5 && daftarVideoId.length > 0) {
+        return daftarVideoId[Math.floor(Math.random() * daftarVideoId.length)];
+      }
+
+      // Step 4b: refresh page
+      location.reload();
+      return null;
+    }
+
+    async function loadVideo() {
+      const vid = await getRandomVideoId();
+      if (vid) {
+        const iframe = document.getElementById("ytFrame");
+        iframe.src = `https://www.youtube.com/embed/${vid}`;
+        const watchBtn = document.getElementById("watchBtn");
+        watchBtn.disabled = false;
+        watchBtn.onclick = () => window.open(`https://www.youtube.com/watch?v=${vid}`, '_blank');
+      }
+	  else {loadVideo()}
+    }
+
+    loadVideo();
+  </script>
+</body>
+</html>

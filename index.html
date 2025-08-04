@@ -9,14 +9,11 @@
   
   <script>
   daftarIdChannel = [];
-  banyakDaftarIdChannel = 2;
-  pilihanDaftarIdChannel = 1;
-  while (Math.random() < 1/2 && pilihanDaftarIdChannel < banyakDaftarIdChannel){pilihanDaftarIdChannel++}
-  document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*pilihanDaftarIdChannel))+'.js"></scr' + 'ipt>');
-  while (Math.random() < 1/2 && pilihanDaftarIdChannel < banyakDaftarIdChannel){
-	pilihanDaftarIdChannel++;
-	if (Math.random() < 1/2){
-		document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*pilihanDaftarIdChannel))+'.js"></scr' + 'ipt>');
+  banyakDaftarIdChannel = 3;
+
+  for (let i = 1; i <= banyakDaftarIdChannel; i++){
+	if (Math.random() < 1/i){
+		document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*i))+'.js"></scr' + 'ipt>');
 	}
 	
   }

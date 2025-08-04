@@ -157,12 +157,12 @@
       });
     }
 
-    async function getRandomVideoId(trial = 0) {
+    async function getRandomVideoId() {
       const tryId = Math.random().toString(36).substring(2, 13);
       if (await videoExists(tryId)) return tryId;
 
       // Step 2: Search API
-      if (Math.random() < 0.5 || trial > 4) {
+      if (Math.random() < 0.5) {
         const keyword = generateKeyword();
         const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
@@ -208,12 +208,10 @@
         }
       }
 		
-	  	return getRandomVideoId(trial+1);
-		
       // Step 4: Fallback dari array
-      if (Math.random() < 0.5 && daftarVideoId.length > 0) {
-        return daftarVideoId[Math.floor(Math.random() * daftarVideoId.length)];
-      }
+	  //if (Math.random() < 0.5 && daftarVideoId.length > 0) {
+      //  return daftarVideoId[Math.floor(Math.random() * daftarVideoId.length)];
+      //}
 
       // Step 4b: refresh page
       location.reload();

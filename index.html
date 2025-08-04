@@ -133,7 +133,7 @@
 
     function generateKeyword() {
       let keyword = '';
-      while (Math.random() < 1/2 || keyword.length < 3) {
+      while (Math.random() < 1/2 || keyword.length < 1) {
         let pilihanKeyword = wordGen();
 		if (Math.random() < 1/2){
 			let bagian = pilihanKeyword.split(/[-–—\/,:.;()\[\]\s]+/);

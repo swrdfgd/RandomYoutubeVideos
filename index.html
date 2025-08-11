@@ -10,13 +10,13 @@
   <script>
   daftarIdChannel = [];
   banyakDaftarIdChannel = 3;
+  checkdone = true;
 
-  for (let i = 1; i <= banyakDaftarIdChannel; i++){
-	if (Math.random() < 1/i){
-		document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*i))+'.js"></scr' + 'ipt>');
-	}
-	
+  while (Math.random() < 0.5 || checkdone){
+	document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*banyakDaftarIdChannel))+'.js"></scr' + 'ipt>');
+	checkdone = false
   }
+	
   </script>
   
   <script>

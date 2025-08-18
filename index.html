@@ -9,11 +9,15 @@
   
   <script>
   daftarIdChannel = [];
-  banyakDaftarIdChannel = 3;
+  var banyakDaftarIdChannelConst = 4;
+  var banyakDaftarIdChannel = 0;
+  banyakDaftarIdChannel = banyakDaftarIdChannelConst + 0;
   checkdone = true;
 
   while (Math.random() < 0.5 || checkdone){
+	banyakDaftarIdChannel = 1+Math.floor(Math.random()*banyakDaftarIdChannel);
 	document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*banyakDaftarIdChannel))+'.js"></scr' + 'ipt>');
+	banyakDaftarIdChannel = banyakDaftarIdChannelConst
 	checkdone = false
   }
 	

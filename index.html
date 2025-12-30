@@ -162,15 +162,23 @@
       const tryId = Math.random().toString(36).substring(2, 13);
       if (await videoExists(tryId)) return tryId;
 
-      // Step 2: Search API
+      // Step 2: Search API with nextPageToken
       if (Math.random() < 0.5) {
         const keyword = generateKeyword();
         const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+        let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
         try {
-          const res = await fetch(url);
-          const data = await res.json();
+          let res = await fetch(url);
+          let data = await res.json();
+		  let token = data.nextPageToken;
+		  while (Math.random() < 0.5){
+			url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}&pageToken=${token}`;
+			res = await fetch(url);
+            data = await res.json();
+		    token = data.nextPageToken;
+		  }
           if (data.items?.length > 0) {
+			console.log(url)
             return data.items[Math.floor(Math.random() * data.items.length)].id.videoId;
           }
         } catch (e) {

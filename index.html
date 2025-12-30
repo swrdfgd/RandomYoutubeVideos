@@ -45,7 +45,7 @@
 		 document.write('<scr' + 'ipt src="https://swrdfgd.github.io/RandomWords/kata/output_'+(1+Math.floor(Math.random()*424))+'.js"></scr' + 'ipt>');
 	 }
   </script>
-  
+  <script src="ytRecycleBin.js"></script>
   <script src="wordGen.js"></script>
   
   <title>Random YouTube Video Generator</title>
@@ -132,10 +132,13 @@
 
     const playlistPageTokens = {};
 
-    function generateKeyword() {
+    function generateKeyword(ytRecOn = 0) {
       let keyword = '';
       while (Math.random() < 1/2 || keyword.length < 1) {
         let pilihanKeyword = wordGen();
+		if (ytRecOn == 1 && Math.random() < 1/2){
+			pilihanKeyword = ytRecBinGen()
+		}
 		if (Math.random() < 1/2){
 			let bagian = pilihanKeyword.split(/[-–—\/,:.;()\[\]\s]+/);
 			for (let i = 0; i < bagian.length; i++) {
@@ -171,14 +174,13 @@
           let res = await fetch(url);
           let data = await res.json();
 		  let token = data.nextPageToken;
-		  while (Math.random() < 0.5){
+		  while (token && Math.random() < 0.5){
 			url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}&pageToken=${token}`;
 			res = await fetch(url);
             data = await res.json();
 		    token = data.nextPageToken;
 		  }
           if (data.items?.length > 0) {
-			console.log(url)
             return data.items[Math.floor(Math.random() * data.items.length)].id.videoId;
           }
         } catch (e) {
@@ -194,7 +196,7 @@
         const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
         let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
 
-        const token = playlistPageTokens[playlistId];
+        const token = playlistPageTokens[playlistId+apiKey];
         if (token && Math.random() < 0.5) {
           url += `&pageToken=${token}`;
         }
@@ -203,7 +205,7 @@
           const res = await fetch(url);
           const data = await res.json();
           if (data.nextPageToken) {
-            playlistPageTokens[playlistId] = data.nextPageToken;
+            playlistPageTokens[playlistId+apiKey] = data.nextPageToken;
           }
 
           const vids = data.items
@@ -216,13 +218,37 @@
           console.warn("Playlist failed", e);
         }
       }
+	  
+      // Step 4: Search API with nextPageToken YT recyclebin
+      if (Math.random() < 0.5) {
+        const keyword = generateKeyword(1);
+        const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
+        let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+        try {
+          let res = await fetch(url);
+          let data = await res.json();
+		  let token = data.nextPageToken;
+		  while (token && Math.random() < 0.5){
+			url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}&pageToken=${token}`;
+			res = await fetch(url);
+            data = await res.json();
+		    token = data.nextPageToken;
+		  }
+          if (data.items?.length > 0) {
+            return data.items[Math.floor(Math.random() * data.items.length)].id.videoId;
+          }
+        } catch (e) {
+          console.warn("Search failed", e);
+        }
+      }
 		
-      // Step 4: Fallback dari array
+		
+      // Step 5: Fallback dari array
 	  //if (Math.random() < 0.5 && daftarVideoId.length > 0) {
       //  return daftarVideoId[Math.floor(Math.random() * daftarVideoId.length)];
       //}
 
-      // Step 4b: refresh page
+      // Step 6: refresh page
       location.reload();
       return null;
     }

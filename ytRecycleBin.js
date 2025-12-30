@@ -38,6 +38,9 @@ daftarYTRecBin = [
 	"New Multimedia Message",
 	"PXL ${randomInt(2020,currentYear)}${padNumber(randomInt(1,12),2)}${padNumber(randomInt(1,31),2)}",
 	"I created this video with the YouTube Slideshow Creator",
+	"MOV${padNumber(randomInt(0,10),5)}",
+	"Recording gvo",
+	"My Videolicious Video",
 	
 ]
 	

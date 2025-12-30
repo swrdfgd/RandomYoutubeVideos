@@ -163,19 +163,30 @@
 
     async function getRandomVideoId() {
       const tryId = Math.random().toString(36).substring(2, 13);
+	  
       if (await videoExists(tryId)) return tryId;
+	  
+	  const tahunSekarang = new Date().getFullYear();
+	  let tahunBatas = tahunSekarang + 1;
 
       // Step 2: Search API with nextPageToken
       if (Math.random() < 0.5) {
         const keyword = generateKeyword();
         const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
-        let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+        let urlOri = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+		if (Math.random() < 0.5){
+		 while (Math.random() < 0.5){
+			tahunBatas = tahunBatas - 1;
+		 }
+		 urlOri = urlOri + `&publishedBefore=${tahunBatas}-${padNumber(randomInt(1,12),2)}-01T01:00:00.0Z`;
+		}
+		let url = '' + urlOri;
         try {
           let res = await fetch(url);
           let data = await res.json();
 		  let token = data.nextPageToken;
 		  while (token && Math.random() < 0.5){
-			url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}&pageToken=${token}`;
+			url = urlOri + `&pageToken=${token}`;
 			res = await fetch(url);
             data = await res.json();
 		    token = data.nextPageToken;
@@ -223,13 +234,20 @@
       if (Math.random() < 0.5) {
         const keyword = generateKeyword(1);
         const apiKey = daftarApi[Math.floor(Math.random() * daftarApi.length)];
-        let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+        let urlOri = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}`;
+		if (Math.random() < 0.5){
+		 while (Math.random() < 0.5){
+			tahunBatas = tahunBatas - 1;
+		 }
+		 urlOri = urlOri + `&publishedBefore=${tahunBatas}-${padNumber(randomInt(1,12),2)}-01T01:00:00.0Z`;
+		}
+		let url = '' + urlOri;
         try {
           let res = await fetch(url);
           let data = await res.json();
 		  let token = data.nextPageToken;
 		  while (token && Math.random() < 0.5){
-			url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(keyword)}&key=${apiKey}&maxResults=${Math.floor(Math.random()*51)}&pageToken=${token}`;
+			url = urlOri + `&pageToken=${token}`;
 			res = await fetch(url);
             data = await res.json();
 		    token = data.nextPageToken;

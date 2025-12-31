@@ -131,6 +131,8 @@
     ];
 
     const playlistPageTokens = {};
+	
+	const daftarFormat = ['3g2'];
 
     function generateKeyword(ytRecOn = 0) {
       let keyword = '';
@@ -146,9 +148,12 @@
 			}
 		}
 		else keyword += pilihanKeyword + ' ';
+		if (ytRecOn == 1 && Math.random() < 1/(daftarYTRecBin.length)){
+			keyword = keyword.slice(0, -1);
+			keyword+= '.' + daftarFormat[Math.floor(Math.random()*daftarFormat.length)] + ' ';
+		}
       }
       keyword = keyword.trim();
-	  
       return keyword;
     }
 

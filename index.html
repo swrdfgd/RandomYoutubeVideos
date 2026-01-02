@@ -135,7 +135,7 @@
 
     const playlistPageTokens = {};
 	
-	const daftarFormat = ['3g2'];
+	const daftarFormat = ['3g2','MP4'];
 
     function generateKeyword(ytRecOn = 0) {
       let keyword = '';
@@ -151,7 +151,7 @@
 			}
 		}
 		else keyword += pilihanKeyword + ' ';
-		if (ytRecOn == 1 && Math.random() < 1/(daftarYTRecBin.length)){
+		if (ytRecOn == 1 && Math.random() < (daftarFormat.length)/(daftarYTRecBin.length)){
 			keyword = keyword.slice(0, -1);
 			keyword+= '.' + daftarFormat[Math.floor(Math.random()*daftarFormat.length)] + ' ';
 		}

@@ -109,7 +109,7 @@ daftarYTRecBin = [
 	"Video uploaded from my mobile phone",
 	"Video.3g2",
 	"Untitled video",
-	
+	".AVI",
 ]
 	
 function ytRecBinGen(){

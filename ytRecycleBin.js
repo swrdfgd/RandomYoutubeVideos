@@ -110,6 +110,7 @@ daftarYTRecBin = [
 	"Video.3g2",
 	"Untitled video",
 	".AVI",
+	"IM${padNumber(randomInt(0,400),6)}",
 ]
 	
 function ytRecBinGen(){

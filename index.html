@@ -12,6 +12,7 @@
   semuaHasil = [];
   videoIdsGoogle = [];
   daftarIdChannel = [];
+  daftarCategory = [['Travel',1]];
   var banyakDaftarIdChannelConst = 10;
   var banyakDaftarIdChannel = 0;
   banyakDaftarIdChannel = banyakDaftarIdChannelConst + 0;
@@ -22,6 +23,13 @@
 	document.write('<scr' + 'ipt src="TopChannelList/TopChannel'+(1+Math.floor(Math.random()*banyakDaftarIdChannel))+'.js"></scr' + 'ipt>');
 	banyakDaftarIdChannel = banyakDaftarIdChannelConst
 	checkdone = false
+  }
+  
+  while (Math.random() < 0.5){
+	pilihanKategori = daftarCategory[Math.floor(Math.random()*daftarCategory.length)]
+	banyakDaftarIdChannel = 1+Math.floor(Math.random()*pilihanKategori[1]);
+	document.write('<scr' + 'ipt src="TopChannelList/'+pilihanKategori[0]+'/TopChannel'+(1+Math.floor(Math.random()*banyakDaftarIdChannel))+'.js"></scr' + 'ipt>');
+	console.log(pilihanKategori[0]);
   }
 	
   </script>

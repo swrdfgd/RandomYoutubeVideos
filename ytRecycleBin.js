@@ -111,6 +111,7 @@ daftarYTRecBin = [
 	"Untitled video",
 	".AVI",
 	"IM${padNumber(randomInt(0,400),6)}",
+	"Sprint PictureMail",
 ]
 	
 function ytRecBinGen(){

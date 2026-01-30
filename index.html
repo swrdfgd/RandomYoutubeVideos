@@ -134,6 +134,8 @@
       	'AIzaSyBwwv3LrgSG3NcETgahW-3-_DyP74GwViA','AIzaSyB7TX3CfUSUBnWnNP9CGBjLzmfIeo6SpfM',
       'AIzaSyCqKzTy1eRi9ydH7a1E-jgbBfZVNcpOLGQ',
     ];
+	
+	const daftarLinkLain = ['https://ytroulette.com/','https://random-ize.com/random-youtube/','https://randomyoutube.net/','https://perchance.org/youtube-video',];
 
     const daftarPlaylist = daftarIdChannel;
 
@@ -295,7 +297,12 @@
       //}
 
       // Step 6: refresh page
-      location.reload();
+	  if (Math.random() < 0.5){
+		location.reload();
+	  }
+	  
+	  window.location.href = daftarLinkLain[Math.floor(Math.random()*daftarLinkLain.length)];
+		
       return null;
     }
 

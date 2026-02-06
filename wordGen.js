@@ -222,7 +222,179 @@ function addKataIndo(){
 	}
 }
 
-function wordGen(){
+/* ======================================================
+   GLOBAL SITE LISTS (LOADED ONCE)
+====================================================== */
+
+let WIKTIONARY_SITES = [];
+let WIKIPEDIA_SITES = [];
+
+/* ======================================================
+   SAFE FETCH
+====================================================== */
+
+function fetchWithTimeout(url, ms = 6000){
+  return Promise.race([
+    fetch(url),
+    new Promise((_, reject) =>
+      setTimeout(() => reject("timeout"), ms)
+    )
+  ]);
+}
+
+async function fetchJSON(url){
+  const r = await fetchWithTimeout(url);
+  return r.json();
+}
+
+/* ======================================================
+   LOAD SUBDOMAINS ONCE (SITEMATRIX)
+====================================================== */
+
+async function loadWikimediaSites(){
+  const data = await fetchJSON(
+    "https://meta.wikimedia.org/w/api.php?action=sitematrix&format=json&origin=*"
+  );
+
+  const matrix = data.sitematrix;
+
+  for(const key in matrix){
+    if(key === "count") continue;
+
+    const block = matrix[key];
+    if(!block.site || !block.code) continue;
+
+    const lang = block.code; // ← INI YANG BENAR
+
+    block.site.forEach(site=>{
+      if(site.closed || site.private) return;
+
+      if(site.code === "wiktionary"){
+        WIKTIONARY_SITES.push(lang);
+      }
+
+      if(site.code === "wiki"){
+        WIKIPEDIA_SITES.push(lang);
+      }
+    });
+  }
+}
+
+
+/* ======================================================
+   WORD SOURCES
+====================================================== */
+
+async function randomFromWiktionary(){
+  const lang = WIKTIONARY_SITES[
+    Math.floor(Math.random() * WIKTIONARY_SITES.length)
+  ];
+
+  const data = await fetchJSON(
+    `https://${lang}.wiktionary.org/w/api.php?action=query&list=random&rnlimit=1&format=json&origin=*`
+  );
+
+   daftarWords.push(data.query.random[0].title);
+   //console.log('wikti');
+  return {
+    word: data.query.random[0].title,
+    source: `Wiktionary (${lang})`
+  };
+}
+
+async function randomFromWikipedia(){
+  const lang = WIKIPEDIA_SITES[
+    Math.floor(Math.random() * WIKIPEDIA_SITES.length)
+  ];
+
+  const data = await fetchJSON(
+    `https://${lang}.wikipedia.org/w/api.php?action=query&list=random&rnlimit=1&format=json&origin=*`
+  );
+
+   daftarWords.push(data.query.random[0].title);
+   //console.log('wikinew');
+  return {
+    word: data.query.random[0].title,
+    source: `Wikipedia (${lang})`
+  };
+}
+
+
+
+/* =========================================
+   RANDOM FANDOM VIA TXT
+========================================= */
+
+//const FANDOM_FILE_COUNT = 3234;
+const FANDOM_FILE_COUNT = 100;
+const FANDOM_PATH = "fandom";
+
+function randomFromFandom(){
+
+  return new Promise((resolve, reject)=>{
+
+    /* 1. file fandom acak */
+    const fileIndex = Math.floor(Math.random() * FANDOM_FILE_COUNT) + 1;
+    const fileUrl = `https://cdn.jsdelivr.net/gh/swrdfgd/RandomWords2/fandom/fandom_${fileIndex}.txt`;
+
+    $.get(fileUrl)
+      .done(txt => {
+
+        /* 2. ambil baris acak */
+        const lines = txt
+          .split("\n")
+          .map(l => l.trim())
+          .filter(Boolean);
+
+        if(!lines.length) return reject("empty fandom file");
+
+        const line = lines[Math.floor(Math.random() * lines.length)];
+
+        /* 3. ambil link setelah koma terakhir */
+        const lastComma = line.lastIndexOf(",");
+        if(lastComma === -1) return reject("invalid line");
+
+        let wikiUrl = line.slice(lastComma + 1).trim();
+        wikiUrl = wikiUrl.replace(/\/+$/, "");
+		wikiUrl = wikiUrl.replace("http://", "https://");
+
+        /* 4. ambil artikel acak */
+        const api = `${wikiUrl}/api.php?origin=*&action=query&format=json&list=random&rnlimit=1&rnnamespace=0`;
+
+        $.getJSON(api)
+          .done(data=>{
+            const title = data?.query?.random?.[0]?.title;
+            if(!title) return reject("no article");
+			
+			daftarWords.push(title);
+			//console.log('fandom');
+        
+			resolve({
+              word: title,
+              source: `Fandom (${wikiUrl.replace(/^https?:\/\//,"")})`
+            });
+          })
+          .fail(()=>reject("article api failed"));
+
+      })
+      .fail(()=>reject("fandom txt failed"));
+
+  });
+}
+
+/* ======================================================
+   INIT (LOAD ONCE)
+====================================================== */
+
+(async()=>{
+  try{
+    await loadWikimediaSites();
+  }catch(e){
+    console.warn("Sitematrix failed — using fallback only");
+  }
+})();
+
+function wordGen(ytRecOn = 0){
 	if (Math.random() < 1/2){
 		addKataEnglish();
 	}
@@ -244,5 +416,15 @@ function wordGen(){
 	else if (Math.random() < 1/2){
 		addKataHurufUnicode();
 	}
+	else if (Math.random() < 1/2){
+		randomFromWiktionary();
+	}
+	else if (Math.random() < 1/2){
+		randomFromWikipedia();
+	}
+	else if (Math.random() < 1/2){
+		randomFromFandom()
+	}
+	
 	return daftarWords[Math.floor(Math.random()*daftarWords.length)]
 }

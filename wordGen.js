@@ -325,8 +325,7 @@ async function randomFromWikipedia(){
    RANDOM FANDOM VIA TXT
 ========================================= */
 
-//const FANDOM_FILE_COUNT = 3234;
-const FANDOM_FILE_COUNT = 100;
+const FANDOM_FILE_COUNT = 3234;
 const FANDOM_PATH = "fandom";
 
 function randomFromFandom(){

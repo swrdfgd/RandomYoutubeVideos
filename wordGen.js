@@ -381,6 +381,67 @@ function randomFromFandom(){
   });
 }
 
+/* =========================================
+   RANDOM FROM WORDLIST
+========================================= */
+
+const WORDLIST_FILE_COUNT = 424;
+const MOREWORDS_FILE_COUNT = 600;
+const MOREWORDS2_FILE_COUNT = 100;
+let fileIndex
+let fileUrl
+
+function randomFromWordlist(){
+
+  return new Promise((resolve, reject)=>{
+
+    /* 1. file wordlist acak */
+	if (Math.random() < 1/3){
+		fileIndex = Math.floor(Math.random() * WORDLIST_FILE_COUNT) + 1;
+		fileUrl = `https://cdn.jsdelivr.net/gh/swrdfgd/RandomWords2/wordlist/wordlist_${fileIndex}.txt`;
+	}
+	else if (Math.random() < 1/2){
+		fileIndex = Math.floor(Math.random() * MOREWORDS_FILE_COUNT) + 1;
+		fileUrl = `https://cdn.jsdelivr.net/gh/swrdfgd/RandomWords2/morewords/items_${fileIndex}.txt`;		
+	}
+	else {
+		fileIndex = Math.floor(Math.random() * MOREWORDS2_FILE_COUNT) + 1;
+		fileUrl = `https://cdn.jsdelivr.net/gh/swrdfgd/RandomWords2/morewords2/names_${fileIndex}.txt`;	
+	}
+	
+	
+
+    $.get(fileUrl)
+      .done(txt => {
+
+        /* 2. ambil baris acak */
+        const lines = txt
+          .split("\n")
+          .map(l => l.trim())
+          .filter(Boolean);
+
+        if(!lines.length) return reject("empty wordlist file");
+
+        const line = lines[Math.floor(Math.random() * lines.length)];
+		
+		daftarWords.push(line);
+		console.log(fileUrl);
+		console.log(line);
+
+		resolve({
+              word: line,
+              source: `wordlist ${fileIndex}`,
+			  isFontGenerated: false
+            });
+
+  
+
+      })
+      .fail(()=>reject("wordlist txt failed"));
+
+  });
+}
+
 /* ======================================================
    INIT (LOAD ONCE)
 ====================================================== */
@@ -422,8 +483,15 @@ function wordGen(ytRecOn = 0){
 		randomFromWikipedia();
 	}
 	else if (Math.random() < 1/2){
-		randomFromFandom()
+		randomFromFandom();
 	}
+	else if (Math.random() < 1/2){
+		randomFromWordlist();
+	}
+	const daftarFungsi = ['addKataEnglish','addKataIndo','addKataWiki','addKataPunk','addKataHurufLatinEnglish','addKataHurufLatinIndo','addKataHurufUnicode','randomFromWiktionary','randomFromWikipedia','randomFromFandom','randomFromWordlist']
+	const fungsi = daftarFungsi[Math.floor(Math.random()*daftarFungsi.length)];
+	console.log(fungsi);
+	eval(fungsi + '();');
 	
 	return daftarWords[Math.floor(Math.random()*daftarWords.length)]
 }
